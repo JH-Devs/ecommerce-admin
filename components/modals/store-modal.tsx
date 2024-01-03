@@ -36,10 +36,10 @@ export const StoreModal = () => {
 
            const response = await axios.post('/api/stores', values);
            
-           toast.success("Obchod byl vytvořen.")
+           window.location.assign(`/${response.data.id}`);
 
         } catch (error) {
-            toast.error("Něco se pokazilo")
+            toast.error("Něco se pokazilo");
         } finally {
             setLoading(false);
         }
