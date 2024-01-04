@@ -1,5 +1,6 @@
 "use client";
 
+import { AlertModal } from "@/components/modals/alert-modal";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Heading } from "@/components/ui/heading";
@@ -7,9 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Store } from "@prisma/client";
+import axios from "axios";
 import { Trash } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import * as z from "zod";
 
 interface SettingsFormProps {
@@ -25,6 +29,9 @@ type SettingsFormValues = z.infer<typeof formSchema>;
 export const SettingsForm: React.FC<SettingsFormProps> = ({
     initialData,
 }) => {
+    const params = useParams();
+    const router = useRouter();
+
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -32,21 +39,53 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({
         resolver: zodResolver(formSchema),
         defaultValues: initialData
     });
+
     const onSubmit = async (data: SettingsFormValues) => {
-        console.log(data);
+        try {
+            setLoading(true);
+            await axios.patch(`/api/stores/${params.storeId}`, data);
+            router.refresh();
+            toast.success("Obchod byl aktualizován");
+        } catch (error) {
+            toast.error("Něco se pokazilo");
+        } finally {
+            setLoading(false);
+        }
     };
+
+    const onDelete = async () => {
+        try {
+            setLoading(true)
+            await axios.delete(`/api/stores/${params.storeId}`)
+            router.refresh();
+            router.push("/");
+            toast.success("Obchod byl smazán.")
+        } catch (error) {
+            toast.error("Nejprve se ujistěte, že jste odstranili všechny produkty a kategorie")
+        } finally {
+            setLoading(false)
+            setOpen(false)
+        }
+    }
 
     return (
        <>
+       <AlertModal 
+       isOpen={open}
+       onClose={() => setOpen(false)}
+       onConfirm={onDelete}
+       loading={loading}
+       />
         <div className="flex items-center justify-between">
             <Heading 
                 title="Nastavení"
                 description="Správa preferencí obchodu"
             />
             <Button
+            disabled={loading}
             variant="destructive"
             size="sm"
-            onClick={() => {}}
+            onClick={() => {setOpen(true)}}
             >
             <Trash className="h-4 w-4" /> 
             </Button>
@@ -69,7 +108,7 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({
                         )}
                     />
                 </div>
-                <Button disabled={loading} className="ml-auto" type="subbmit">
+                <Button disabled={loading} className="ml-auto" type="submit">
                     uložit změny
                 </Button>
             </form>

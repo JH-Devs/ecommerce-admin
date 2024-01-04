@@ -70,8 +70,9 @@ export default function StoreSwitcher({
                                     className="text-sm"
                                 >
                                     <StoreIcon className="mr-2 h-4 w-4" />
+                                    {store.label}
                                     <Check
-                                     className={cn("ml-auto h-4 w-4", currentStore?.value === store.value ? "popacity-100" : "opacity-0")}
+                                     className={cn("ml-auto h-4 w-4", currentStore?.value === store.value ? "opacity-100" : "opacity-0")}
                                      />
                                 </CommandItem>
                             ))}

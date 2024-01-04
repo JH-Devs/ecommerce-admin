@@ -13,6 +13,11 @@ export function MainNav({
 
     const routes = [
         {
+            href: `/${params.storeId}`,
+            label: 'Přehled',
+            active: pathname === `/${params.storeId}`,   
+           },
+        {
          href: `/${params.storeId}/settings`,
          label: 'Nastavení',
          active: pathname === `/${params.storeId}/settings`,   
