@@ -15,7 +15,7 @@ import { toast } from "react-hot-toast";
 
 
 const formSchema = z.object (({
-    name: z.string().min(1),
+    name: z.string().min(1, "Název musí obsahovat miniláně 1 znak"),
 }));
 
 export const StoreModal = () => {
