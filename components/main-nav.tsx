@@ -22,6 +22,11 @@ export function MainNav({
             label: 'Reklamy',
             active: pathname === `/${params.storeId}/billboards`,
           },
+          {
+            href: `/${params.storeId}/categories`,
+            label: 'Kategorie',
+            active: pathname === `/${params.storeId}/categories`,
+          },
         {
          href: `/${params.storeId}/settings`,
          label: 'Nastavení',
