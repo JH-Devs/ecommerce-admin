@@ -5,15 +5,15 @@ import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 import { Plus } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { SizeColumn, columns } from "./columns";
+import { ColorColumn, columns } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
 import { ApiList } from "@/components/ui/api-list";
 
-interface SizesClientProps {
-    data: SizeColumn[]
+interface ColorsClientProps {
+    data: ColorColumn[]
 }
 
-export const SizesClient: React.FC<SizesClientProps> = ({
+export const ColorsClient: React.FC<ColorsClientProps> = ({
     data
 }) => {
     const router = useRouter();
@@ -24,19 +24,19 @@ export const SizesClient: React.FC<SizesClientProps> = ({
         <>
         <div className="flex items-center justify-between">
             <Heading
-                title={`Velikosti (${data.length})`}
-                description="Správa velikostí pro váš obchod"
+                title={`Barvy (${data.length})`}
+                description="Správa barev pro váš obchod"
             />
-            <Button onClick={() => router.push(`/${params.storeId}/sizes/new`)}>
+            <Button onClick={() => router.push(`/${params.storeId}/colors/new`)}>
                 <Plus className="mr-2 h-4 w-4"/>
-                Přidat velikost
+                Přidat barvu
             </Button>
         </div>
         <Separator />
         <DataTable searchKey="name" columns={columns} data={data} />
-        <Heading title="API" description="API volání pro velikost" />
+        <Heading title="API" description="API volání pro barvu" />
         <Separator />
-        <ApiList entityName="sizes" entityIdName="sizeId" />
+        <ApiList entityName="colors" entityIdName="colorId" />
         </>
     )
 }

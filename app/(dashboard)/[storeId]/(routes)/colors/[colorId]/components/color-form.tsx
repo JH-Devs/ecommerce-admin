@@ -7,7 +7,7 @@ import { Heading } from "@/components/ui/heading";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Size} from "@prisma/client";
+import { Color } from "@prisma/client";
 import axios from "axios";
 import { Trash } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -16,18 +16,20 @@ import { useForm } from "react-hook-form";
 import {toast} from "react-hot-toast";
 import * as z from "zod";
 
-interface SizeFormProps {
-    initialData: Size | null;
+interface ColorFormProps {
+    initialData: Color | null;
 }
 
 const formSchema = z.object({
     name: z.string().min(1, "Název musí obsahovat minimálně 1 znak"),
-    value: z.string().min(1, "Hodnota musí obsahovat minimálně 1 znak")
+    value: z.string().min(4, "Povinné pole").regex(/^#/, {
+        message: 'Musí být HEX kód'
+    }),
 });
 
-type SizeFormValues = z.infer<typeof formSchema>;
+type ColorFormValues = z.infer<typeof formSchema>;
 
-export const SizeForm: React.FC<SizeFormProps> = ({
+export const ColorForm: React.FC<ColorFormProps> = ({
     initialData
 }) => {
     const params = useParams();
@@ -36,28 +38,28 @@ export const SizeForm: React.FC<SizeFormProps> = ({
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const title = initialData ? "Upravit velikost" : "Vytvořit velikost";
-    const description = initialData ? "Upravení  velikosti" : "Vytvoření  velikosti";
-    const toastMessage = initialData ? "Velikost byla upravena" : "Velikost byla vytvořena";
+    const title = initialData ? "Upravit barvu" : "Vytvořit barvu";
+    const description = initialData ? "Upravení  barvy" : "Vytvoření  barvy";
+    const toastMessage = initialData ? "Barva byla upravena" : "Barva byla vytvořena";
     const action = initialData ? "Uložit změny" : "Vytvořit";
 
-    const form = useForm<SizeFormValues>({
+    const form = useForm<ColorFormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: initialData || {
             name: ''
         }
     });
 
-    const onSubmit = async (data: SizeFormValues) => {
+    const onSubmit = async (data: ColorFormValues) => {
         try {
             setLoading(true);
             if(initialData) {
-                await axios.patch(`/api/${params.storeId}/sizes/${params.sizeId}`, data);
+                await axios.patch(`/api/${params.storeId}/colors/${params.colorId}`, data);
             } else {
-                await axios.post(`/api/${params.storeId}/sizes`, data);
+                await axios.post(`/api/${params.storeId}/colors`, data);
         }
             router.refresh();
-            router.push(`/${params.storeId}/sizes`)
+            router.push(`/${params.storeId}/colors`)
             toast.success(toastMessage);
         } catch (error) {
             toast.error("Něco se pokazilo");
@@ -69,12 +71,12 @@ export const SizeForm: React.FC<SizeFormProps> = ({
     const onDelete = async () => {
         try {
             setLoading(true)
-            await axios.delete(`/api/${params.storeId}/sizes/${params.sizeId}`);
+            await axios.delete(`/api/${params.storeId}/colors/${params.colorId}`);
             router.refresh();
-            router.push(`/${params.storeId}/sizes`);
-            toast.success("Velikost byla smazána.")
+            router.push(`/${params.storeId}/colors`);
+            toast.success("Barva byla smazána.")
         } catch (error) {
-            toast.error("Nejprve se ujistěte, že jste odstranili všechny produkty této velikost")
+            toast.error("Nejprve se ujistěte, že jste odstranili všechny produkty této barvě")
         } finally {
             setLoading(false)
             setOpen(false)
@@ -129,7 +131,13 @@ export const SizeForm: React.FC<SizeFormProps> = ({
                 <FormItem>
                   <FormLabel>Hodnota</FormLabel>
                   <FormControl>
-                    <Input disabled={loading} placeholder="Hodnota velikosti" {...field} />
+                    <div className="flex items-center gap-x-4">
+                    <Input disabled={loading} placeholder="Hodnota barvy" {...field} />
+                    <div 
+                    className="border p-4 rounded-full"
+                    style={{ backgroundColor: field.value }}
+                    />
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
