@@ -37,6 +37,11 @@ export function MainNav({
             label: 'Barvy',
             active: pathname === `/${params.storeId}/colors`,
           },
+          {
+            href: `/${params.storeId}/products`,
+            label: 'Produkty',
+            active: pathname === `/${params.storeId}/products`,
+          },
         {
          href: `/${params.storeId}/settings`,
          label: 'Nastavení',

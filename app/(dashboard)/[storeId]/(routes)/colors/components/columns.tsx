@@ -16,9 +16,15 @@ export const columns: ColumnDef<ColorColumn>[] = [
     header: "Název",
   },
   {
-    accessorKey: "value",
-    header: "Hodnota",
-  },
+  accessorKey: "value",
+  header: "Hodnota",
+  cell: ({ row }) => (
+    <div className="flex items-center gap-x-2">
+      {row.original.value}
+      <div className="h-6 w-6 rounded-full border" style={{ backgroundColor: row.original.value }} />
+    </div>
+  )
+},
   
   {
     accessorKey: "createdAt",
