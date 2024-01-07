@@ -74,7 +74,7 @@ export const BillboardForm: React.FC<BillboardFormProps> = ({
             setLoading(true)
             await axios.delete(`/api/${params.storeId}/billboards/${params.billboardId}`);
             router.refresh();
-            router.push("/");
+            router.push(`/${params.storeId}/billboards`);
             toast.success("Reklama byla smazána.")
         } catch (error) {
             toast.error("Nejprve se ujistěte, že jste odstranili všechny kategorie této reklamy")
