@@ -27,6 +27,11 @@ export function MainNav({
             label: 'Kategorie',
             active: pathname === `/${params.storeId}/categories`,
           },
+          {
+            href: `/${params.storeId}/sizes`,
+            label: 'Velikosti',
+            active: pathname === `/${params.storeId}/sizes`,
+          },
         {
          href: `/${params.storeId}/settings`,
          label: 'Nastavení',
