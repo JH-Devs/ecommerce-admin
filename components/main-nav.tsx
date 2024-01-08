@@ -42,6 +42,11 @@ export function MainNav({
             label: 'Produkty',
             active: pathname === `/${params.storeId}/products`,
           },
+          {
+            href: `/${params.storeId}/orders`,
+            label: 'Objednávky',
+            active: pathname === `/${params.storeId}/orders`,
+          },
         {
          href: `/${params.storeId}/settings`,
          label: 'Nastavení',
