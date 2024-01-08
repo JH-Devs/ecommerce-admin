@@ -29,6 +29,9 @@ export async function POST (
         if (!name) {
             return new NextResponse ("Název je povinný", { status: 400 });
         }
+        if (!images || !images.length) {
+            return new NextResponse ("Obrázek je povinný", { status: 400 });
+        }
         if (!price) {
             return new NextResponse ("Cena je povinná", { status: 400 });
         }
@@ -41,7 +44,7 @@ export async function POST (
         if (!sizeId) {
             return new NextResponse ("Id velikosti je povinné", { status: 400 });
         }
-        
+
         if (!params.storeId) {
             return new NextResponse ("ID obchodu je povinné", { status: 400 });
         }
@@ -57,18 +60,30 @@ export async function POST (
             return new NextResponse("Neoprávnění přístup", { status: 403 });
         }
 
-        const billboard = await prismadb.billboard.create({
+        const product = await prismadb.product.create({
            data: {
-            label,
-            imageUrl,
-            storeId: params.storeId
+            name,
+            price,
+            isFeatured,
+            isArchived,
+            categoryId,
+            colorId,
+            sizeId,
+            storeId: params.storeId,
+            images: {
+                createMany: {
+                    data: [
+                        ...images.map((image: {url: string}) => image)
+                    ]
+                }
+            }
            } 
         });
 
-        return NextResponse.json(billboard);
+        return NextResponse.json(product);
 
     } catch (error) {
-        console.log('[BILLBOARDS_POST]', error);
+        console.log('[PRODUCTS_POST]', error);
         return new NextResponse("Interní chyba", { status: 500 });
     }
 };
@@ -76,24 +91,43 @@ export async function POST (
 export async function GET (
     req: Request,
     { params }: { params: {storeId: string}}
-
 ) {
     try {
+        const { searchParams } = new URL(req.url);
+        const categoryId = searchParams.get("categoryId") || undefined;
+        const colorId = searchParams.get("colorId") || undefined;
+        const sizeId = searchParams.get("sizeId") || undefined;
+        const isFeatured = searchParams.get("isFeatured");
+
         if (!params.storeId) {
             return new NextResponse ("ID obchodu je povinné", { status: 400 });
         }
 
 
-        const billboards = await prismadb.billboard.findMany({
+        const products = await prismadb.product.findMany({
           where: {
             storeId: params.storeId,
+            categoryId,
+            colorId,
+            sizeId,
+            isFeatured: isFeatured ? true : undefined,
+            isArchived: false
           },
+          include: {
+            images: true,
+            category: true,
+            color: true,
+            size: true
+          },
+          orderBy: {
+            createdAt: 'desc'
+          }
         });
 
-        return NextResponse.json(billboards);
+        return NextResponse.json(products);
 
     } catch (error) {
-        console.log('[BILLBOARDS_GET]', error);
+        console.log('[PRODUCTS_GET]', error);
         return new NextResponse("Interní chyba", { status: 500 });
     }
 };
