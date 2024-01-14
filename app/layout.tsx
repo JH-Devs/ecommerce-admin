@@ -24,9 +24,9 @@ export default function RootLayout({
     <ClerkProvider localization={csCZ}>
     <html lang="cs">
       <body className={inter.className}>
-        <ToasterProvider />
-        <ModalProvider />
-        {children}
+          <ToasterProvider />
+          <ModalProvider />
+          {children}
         </body>
     </html>
     </ClerkProvider>
