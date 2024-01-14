@@ -19,15 +19,6 @@ import * as z from "zod";
 import { Select, SelectContent, SelectTrigger, SelectValue, SelectItem } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox";
 
-interface ProductFormProps {
-    initialData: Product & {
-        images: Image[]
-    } | null;
-    categories: Category[];
-    colors: Color[];
-    sizes: Size[];
-}
-
 const formSchema = z.object({
     name: z.string().min(1, "Název musí obsahovat minimálně 1 znak"),
     images: z.object({ url: z.string() }).array(),
@@ -40,6 +31,16 @@ const formSchema = z.object({
 });
 
 type ProductFormValues = z.infer<typeof formSchema>;
+
+interface ProductFormProps {
+    initialData: Product & {
+        images: Image[]
+    } | null;
+    categories: Category[];
+    colors: Color[];
+    sizes: Size[];
+}
+
 
 export const ProductForm: React.FC<ProductFormProps> = ({
     initialData,
@@ -78,36 +79,35 @@ export const ProductForm: React.FC<ProductFormProps> = ({
 
     const onSubmit = async (data: ProductFormValues) => {
         try {
-            setLoading(true);
-            if(initialData) {
-                await axios.patch(`/api/${params.storeId}/products/${params.productId}`, data);
-            } else {
-                await axios.post(`/api/${params.storeId}/products`, data);
-        }
-            router.refresh();
-            router.push(`/${params.storeId}/products`)
-            toast.success(toastMessage);
-        } catch (error) {
-            toast.error("Něco se pokazilo");
+          setLoading(true);
+          if (initialData) {
+            await axios.patch(`/api/${params.storeId}/products/${params.productId}`, data);
+          } else {
+            await axios.post(`/api/${params.storeId}/products`, data);
+          }
+          router.refresh();
+          router.push(`/${params.storeId}/products`);
+          toast.success(toastMessage);
+        } catch (error: any) {
+          toast.error('Něco se pokazilo.');
         } finally {
-            setLoading(false);
+          setLoading(false);
         }
-    };
-
-    const onDelete = async () => {
+      };
+      const onDelete = async () => {
         try {
-            setLoading(true)
-            await axios.delete(`/api/${params.storeId}/products/${params.billboardId}`);
-            router.refresh();
-            router.push(`/${params.storeId}/products`);
-            toast.success("Produkt byl smazán.")
-        } catch (error) {
-            toast.error("Jste si jistí?")
+          setLoading(true);
+          await axios.delete(`/api/${params.storeId}/products/${params.productId}`);
+          router.refresh();
+          router.push(`/${params.storeId}/products`);
+          toast.success('Produkt byl smazán');
+        } catch (error: any) {
+          toast.error('Něco se pokazilo.');
         } finally {
-            setLoading(false)
-            setOpen(false)
+          setLoading(false);
+          setOpen(false);
         }
-    }
+      }
 
     return (
        <>
@@ -135,7 +135,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
         </div>
         <Separator />
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
             <FormField
             control={form.control}
             name="images"
@@ -143,7 +143,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
               <FormItem>
                 <FormLabel>Obrázky</FormLabel>
                 <FormControl>
-                  <ImageUpload 
+                <ImageUpload 
                     value={field.value.map((image) => image.url)} 
                     disabled={loading} 
                     onChange={(url) => field.onChange([...field.value, { url }])}
